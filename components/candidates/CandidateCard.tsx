@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Phone, Star } from "lucide-react";
+import Link from "next/link";
 
 interface CandidateCardProps {
+  id: string;
   name: string;
   email: string;
   phone?: string | null;
@@ -12,6 +14,7 @@ interface CandidateCardProps {
 }
 
 export default function CandidateCard({
+  id,
   name,
   email,
   phone,
@@ -20,7 +23,8 @@ export default function CandidateCard({
   status,
 }: CandidateCardProps) {
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Link href={`/candidates/${id}`}>
+    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
       <CardContent className="p-6">
 
         <h2 className="text-xl font-semibold">
@@ -62,5 +66,6 @@ export default function CandidateCard({
 
       </CardContent>
     </Card>
+    </Link>
   );
 }

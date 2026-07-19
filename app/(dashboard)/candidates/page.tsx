@@ -51,6 +51,7 @@ export default async function CandidatesPage() {
           {candidates.map((candidate) => (
             <CandidateCard
               key={candidate.id}
+              id={candidate.id}
               name={candidate.name}
               email={candidate.email}
               phone={candidate.phone}
