@@ -1,10 +1,41 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import CandidateCard from "@/components/candidates/CandidateCard";
+
+import CandidateSearch from "@/components/candidates/CandidateSearch";
 import { Button } from "@/components/ui/button";
 
-export default async function CandidatesPage() {
+export default async function CandidatesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}) {
+  const { search = "" } = await searchParams;
+
   const candidates = await prisma.candidate.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          skills: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -20,7 +51,7 @@ export default async function CandidatesPage() {
             Candidates
           </h1>
 
-          <p className="text-slate-600 mt-1">
+          <p className="mt-1 text-slate-600">
             Manage all job applicants.
           </p>
         </div>
@@ -33,36 +64,7 @@ export default async function CandidatesPage() {
 
       </div>
 
-      {candidates.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-12 text-center">
-
-          <h2 className="text-xl font-semibold">
-            No Candidates Found
-          </h2>
-
-          <p className="text-slate-500 mt-2">
-            Click "Add Candidate" to create your first candidate.
-          </p>
-
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-
-          {candidates.map((candidate) => (
-            <CandidateCard
-              key={candidate.id}
-              id={candidate.id}
-              name={candidate.name}
-              email={candidate.email}
-              phone={candidate.phone}
-              skills={candidate.skills}
-              aiScore={candidate.aiScore}
-              status={candidate.status}
-            />
-          ))}
-
-        </div>
-      )}
+      <CandidateSearch candidates={candidates} />
 
     </div>
   );

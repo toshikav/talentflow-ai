@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Sidebar from "@/components/shared/Sidebar";
 import Navbar from "@/components/shared/Navbar";
 
+
 export default function DashboardLayout({
   children,
 }: {
@@ -16,6 +17,7 @@ export default function DashboardLayout({
 
         <main className="flex-1 p-8">
           {children}
+          
         </main>
       </div>
     </div>

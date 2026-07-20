@@ -1,25 +1,121 @@
-import {
-  Briefcase,
-  Users,
-  Calendar,
-  Brain,
-} from "lucide-react";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 import StatsCard from "@/components/dashboard/StatsCard";
-import HiringChart from "@/components/charts/HiringChart";
-import AIInsights from "@/components/ai/AIInsights";
-import RecentCandidates from "@/components/candidates/RecentCandidates";
-import UpcomingInterviews from "@/components/dashboard/UpcomingInterviews";
+import StatusBadge from "@/components/candidates/StatusBadge";
+import StatusPieChart from "@/components/dashboard/StatusPieChart";
+import MonthlyCandidatesChart from "@/components/dashboard/MonthlyCandidatesChart";
+import { format } from "date-fns";
 
-export default function DashboardPage() {
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import {
+  Users,
+  UserPlus,
+  CalendarCheck,
+  BadgeCheck,
+  UserX,
+} from "lucide-react";
+
+export default async function DashboardPage() {
+  // Statistics
+  const totalCandidates = await prisma.candidate.count();
+
+  const applied = await prisma.candidate.count({
+    where: {
+      status: "Applied",
+    },
+  });
+
+  const interview = await prisma.candidate.count({
+    where: {
+      status: "Interview",
+    },
+  });
+
+  const hired = await prisma.candidate.count({
+    where: {
+      status: "Hired",
+    },
+  });
+
+  const rejected = await prisma.candidate.count({
+    where: {
+      status: "Rejected",
+    },
+  });
+
+  // Pie Chart Data
+  const chartData = [
+    {
+      name: "Applied",
+      value: applied,
+    },
+    {
+      name: "Interview",
+      value: interview,
+    },
+    {
+      name: "Hired",
+      value: hired,
+    },
+    {
+      name: "Rejected",
+      value: rejected,
+    },
+  ];
+
+  const allCandidates = await prisma.candidate.findMany({
+  orderBy: {
+    createdAt: "asc",
+  },
+});
+
+const monthlyMap = new Map<string, number>();
+
+allCandidates.forEach((candidate) => {
+  const month = format(candidate.createdAt, "MMM");
+
+  monthlyMap.set(
+    month,
+    (monthlyMap.get(month) || 0) + 1
+  );
+});
+
+const monthlyData = Array.from(monthlyMap.entries()).map(
+  ([month, candidates]) => ({
+    month,
+    candidates,
+  })
+);
+
+  // Recent Candidates
+  const recentCandidates = await prisma.candidate.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
+
   return (
     <div className="space-y-8">
-
       {/* Heading */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">
-          Dashboard
-        </h1>
+        <h1 className="text-4xl font-bold">Dashboard</h1>
 
         <p className="mt-2 text-slate-500">
           Welcome back! Here's your hiring overview.
@@ -27,60 +123,106 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <StatsCard
-          title="Total Jobs"
-          value="24"
-          change="+12% this month"
-          icon={<Briefcase size={28} />}
-        />
-
-        <StatsCard
-          title="Candidates"
-          value="136"
-          change="+18 new candidates"
+          title="Total Candidates"
+          value={totalCandidates}
           icon={<Users size={28} />}
         />
 
         <StatsCard
-          title="Interviews"
-          value="18"
-          change="+5 scheduled"
-          icon={<Calendar size={28} />}
+          title="Applied"
+          value={applied}
+          icon={<UserPlus size={28} />}
         />
 
         <StatsCard
-          title="AI Match Score"
-          value="91%"
-          change="+4% improvement"
-          icon={<Brain size={28} />}
+          title="Interview"
+          value={interview}
+          icon={<CalendarCheck size={28} />}
         />
 
+        <StatsCard
+          title="Hired"
+          value={hired}
+          icon={<BadgeCheck size={28} />}
+        />
+
+        <StatsCard
+          title="Rejected"
+          value={rejected}
+          icon={<UserX size={28} />}
+        />
       </div>
 
-      {/* Hiring Chart + AI Insights */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Candidates by Status */}
+<div className="grid gap-6 lg:grid-cols-2">
 
-        <div className="lg:col-span-2">
-          <HiringChart />
-        </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>
+        Candidates by Status
+      </CardTitle>
+    </CardHeader>
 
-        <AIInsights />
+    <CardContent>
+      <StatusPieChart data={chartData} />
+    </CardContent>
+  </Card>
 
-      </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>
+        Monthly Candidates
+      </CardTitle>
+    </CardHeader>
 
-      {/* Recent Candidates + Upcoming Interviews */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <CardContent>
+      <MonthlyCandidatesChart data={monthlyData} />
+    </CardContent>
+  </Card>
 
-        <div className="lg:col-span-2">
-          <RecentCandidates />
-        </div>
+</div>
 
-        <UpcomingInterviews />
+      {/* Recent Candidates */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Candidates</CardTitle>
+        </CardHeader>
 
-      </div>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
 
+            <TableBody>
+              {recentCandidates.map((candidate) => (
+                <TableRow key={candidate.id}>
+                  <TableCell>
+                    <Link
+                      href={`/candidates/${candidate.id}`}
+                      className="font-medium text-blue-600 hover:underline"
+                    >
+                      {candidate.name}
+                    </Link>
+                  </TableCell>
+
+                  <TableCell>{candidate.email}</TableCell>
+
+                  <TableCell>
+                    <StatusBadge status={candidate.status} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,39 +1,32 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { ReactNode } from "react";
 
 interface StatsCardProps {
   title: string;
-  value: string;
+  value: number | string;
   icon: ReactNode;
-  change: string;
 }
 
 export default function StatsCard({
   title,
   value,
   icon,
-  change,
 }: StatsCardProps) {
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-lg">
-      <div className="flex items-center justify-between">
+    <Card className="shadow-md hover:shadow-lg transition">
+      <CardContent className="flex items-center justify-between p-6">
         <div>
-          <p className="text-sm text-slate-500">
-            {title}
-          </p>
+          <p className="text-sm text-slate-500">{title}</p>
 
-          <h2 className="mt-2 text-3xl font-bold">
+          <h2 className="text-3xl font-bold mt-2">
             {value}
           </h2>
-
-          <p className="mt-2 text-sm text-green-600">
-            {change}
-          </p>
         </div>
 
-        <div className="rounded-xl bg-blue-100 p-3 text-blue-600">
+        <div className="rounded-full bg-blue-100 p-4 text-blue-600">
           {icon}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

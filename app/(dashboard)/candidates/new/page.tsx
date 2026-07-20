@@ -43,36 +43,31 @@ export default function NewCandidatePage() {
         throw new Error("Failed to create candidate");
       }
 
-      toast.success("Candidate created successfully!");
+      toast.success("Candidate added successfully!");
 
       setTimeout(() => {
-    router.push("/candidates");
-    }, 1000);
-    
+        router.push("/candidates");
+      }, 1500);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
     <div className="max-w-4xl mx-auto">
-
       <Card>
-
         <CardHeader>
           <CardTitle>Add New Candidate</CardTitle>
         </CardHeader>
 
         <CardContent>
-
           <form
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-
             <div>
               <Label>Name</Label>
               <Input
@@ -80,6 +75,7 @@ export default function NewCandidatePage() {
                 onChange={(e) =>
                   setForm({ ...form, name: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -91,6 +87,7 @@ export default function NewCandidatePage() {
                 onChange={(e) =>
                   setForm({ ...form, email: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -111,6 +108,7 @@ export default function NewCandidatePage() {
                 onChange={(e) =>
                   setForm({ ...form, skills: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -118,6 +116,7 @@ export default function NewCandidatePage() {
               <Label>Experience (Years)</Label>
               <Input
                 type="number"
+                min={0}
                 value={form.experience}
                 onChange={(e) =>
                   setForm({
@@ -144,16 +143,13 @@ export default function NewCandidatePage() {
             <Button
               type="submit"
               disabled={loading}
+              className="w-full"
             >
-              {loading ? "Creating..." : "Add Candidate"}
+              {loading ? "Creating Candidate..." : "Add Candidate"}
             </Button>
-
           </form>
-
         </CardContent>
-
       </Card>
-
     </div>
   );
 }
