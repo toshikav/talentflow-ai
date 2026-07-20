@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function NewCandidatePage() {
   const router = useRouter();
@@ -42,12 +43,15 @@ export default function NewCandidatePage() {
         throw new Error("Failed to create candidate");
       }
 
-      alert("Candidate Created Successfully!");
+      toast.success("Candidate created successfully!");
 
-      router.push("/candidates");
+      setTimeout(() => {
+    router.push("/candidates");
+    }, 1000);
+    
     } catch (error) {
       console.error(error);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
     }
 
     setLoading(false);

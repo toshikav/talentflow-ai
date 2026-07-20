@@ -14,9 +14,13 @@ export async function GET(
 ) {
   const { id } = await params;
 
+  console.log("ID from params:", id);
+
   const candidate = await prisma.candidate.findUnique({
     where: { id },
   });
+
+  console.log("Candidate:", candidate);
 
   if (!candidate) {
     return NextResponse.json(

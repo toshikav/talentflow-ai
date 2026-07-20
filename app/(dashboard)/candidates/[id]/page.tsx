@@ -1,10 +1,28 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, Star, Briefcase } from "lucide-react";
 import Link from "next/link";
+
+import { prisma } from "@/lib/prisma";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+import DeleteCandidateButton from "@/components/candidates/DeleteCandidateButton";
+import StatusBadge from "@/components/candidates/StatusBadge";
+
+import {
+  Mail,
+  Phone,
+  Star,
+  Briefcase,
+  FileText,
+} from "lucide-react";
 
 interface CandidatePageProps {
   params: Promise<{
@@ -29,70 +47,70 @@ export default async function CandidatePage({
 
   return (
     <div className="max-w-4xl mx-auto">
-
-      <Card>
-
+      <Card className="shadow-lg">
         <CardHeader>
-
-        <div className="flex items-center justify-between">
-
-            <CardTitle className="text-3xl">
-            {candidate.name}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="text-4xl font-bold">
+              {candidate.name}
             </CardTitle>
 
-            <Link href={`/candidates/${candidate.id}/edit`}>
-            <Button>
-                Edit Candidate
-            </Button>
-            </Link>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link href={`/candidates/${candidate.id}/edit`}>
+                <Button>Edit Candidate</Button>
+              </Link>
 
-        </div>
-
+              <DeleteCandidateButton id={candidate.id} />
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
 
           <div className="flex items-center gap-3">
-            <Mail size={20} />
+            <Mail className="text-blue-500" size={20} />
             <span>{candidate.email}</span>
           </div>
 
           {candidate.phone && (
             <div className="flex items-center gap-3">
-              <Phone size={20} />
+              <Phone className="text-green-500" size={20} />
               <span>{candidate.phone}</span>
             </div>
           )}
 
+          <hr />
+
           <div className="flex items-center gap-3">
-            <Briefcase size={20} />
+            <Briefcase className="text-purple-500" size={20} />
             <span>{candidate.experience} Years Experience</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <Star size={20} />
-            <span>AI Score: {candidate.aiScore ?? 0}</span>
+            <Star className="text-yellow-500" size={20} />
+            <span className="font-medium">
+              AI Score: {candidate.aiScore ?? 0}/100
+            </span>
           </div>
 
+          <hr />
+
           <div>
-            <h3 className="font-semibold mb-3">
+            <h3 className="mb-3 font-semibold">
               Status
             </h3>
 
-            <Badge>
-              {candidate.status}
-            </Badge>
+            <StatusBadge status={candidate.status} />
           </div>
 
           <div>
-            <h3 className="font-semibold mb-3">
+            <h3 className="mb-3 font-semibold">
               Skills
             </h3>
 
             <div className="flex flex-wrap gap-2">
               {candidate.skills.split(",").map((skill) => (
                 <Badge
-                  key={skill}
+                  key={skill.trim()}
                   variant="secondary"
                 >
                   {skill.trim()}
@@ -102,22 +120,25 @@ export default async function CandidatePage({
           </div>
 
           {candidate.resumeUrl && (
-            <div>
-              <a
+            <>
+              <hr />
+
+              <div>
+                <a
                 href={candidate.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                📄 Open Resume
-              </a>
-            </div>
+                >
+                <Button>
+                    <FileText className="mr-2 h-4 w-4" />
+                    View Resume
+                </Button>
+                </a>
+              </div>
+            </>
           )}
-
         </CardContent>
-
       </Card>
-
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function EditCandidatePage() {
   const params = useParams();
@@ -68,12 +69,12 @@ export default function EditCandidatePage() {
         throw new Error("Update failed");
       }
 
-      alert("Candidate Updated Successfully!");
+      toast.success("Candidate updated successfully!");
 
       router.push(`/candidates/${id}`);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong.");
+      toast.error("Something went wrong!");
     }
 
     setSaving(false);
