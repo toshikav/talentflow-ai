@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import JobCard from "@/components/jobs/JobCard";
 import { Button } from "@/components/ui/button";
+import JobSearch from "@/components/jobs/JobSearch";
 
 export default async function JobsPage() {
   const jobs = await prisma.job.findMany({
@@ -35,34 +35,7 @@ export default async function JobsPage() {
       </div>
 
       {/* Jobs List */}
-      {jobs.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-12 text-center">
-
-          <h2 className="text-xl font-semibold">
-            No Jobs Found
-          </h2>
-
-          <p className="text-slate-500 mt-2">
-            Click "Add New Job" to create your first job.
-          </p>
-
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-
-          {jobs.map((job) => (
-            <JobCard
-              key={job.id}
-              title={job.title}
-              company={job.company}
-              location={job.location}
-              salary={job.salary}
-              requiredSkills={job.requiredSkills}
-            />
-          ))}
-
-        </div>
-      )}
+      <JobSearch jobs={jobs} />
 
     </div>
   );
