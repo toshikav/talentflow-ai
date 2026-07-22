@@ -35,7 +35,7 @@ export default function JobSearch({ jobs }: Props) {
   return (
     <div className="space-y-6">
       <Input
-        placeholder="🔍 Search jobs..."
+        placeholder="🔍 Search by title, company, location or skills..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="max-w-md"
@@ -52,7 +52,7 @@ export default function JobSearch({ jobs }: Props) {
           </h2>
 
           <p className="mt-2 text-slate-500">
-            Try another search keyword.
+            Try another keyword.
           </p>
         </div>
       ) : (
